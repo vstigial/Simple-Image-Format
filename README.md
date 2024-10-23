@@ -2,9 +2,11 @@
 
 Planning to implement a simple GUI editor for this format.
 
-This program currently only draws the data directly to the screen using `SetPixel`.
+This program draws data pixel by pixel to a GLFW window with OpenGL.
 ```
-This is the data for one pixel. It's location on the screen is 900, 500. 900 is the x value of the pixel on the display, and 500 is the y value. (1, 2, 3) is the RGB color of the pixel.
+This is the data for one pixel. 
+It's location on the window is 900, 500. 900 is the x value of the pixel on the display, and 500 is the y value. 
+(1, 2, 3) is the RGB color of the pixel.
 900 500 (1, 2, 3)
 ```
 
@@ -13,10 +15,10 @@ This is the data for one pixel. It's location on the screen is 900, 500. 900 is 
 Some Examples are located in the `imgs` folder. 
 
 ### `2col.txt` 
-This file draws 10 pixels on the screen, 2 rows with 5 pixels in each row. A gradient from black to blue is drawn.
+This file draws 10 pixels on the window, 2 rows with 5 pixels in each row. A gradient from black to blue is drawn.
 
 ### `smile.txt`
-This file draws a simple smile to the screen.
+This file draws a simple smile to the window.
 
 ### `largegradient.txt`
 An enlarged version of 2col.txt.
