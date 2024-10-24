@@ -5,14 +5,16 @@ Planning to implement a simple GUI editor for this format.
 This program draws data pixel by pixel to a GLFW window with OpenGL.
 ```
 This is the data for one pixel. 
-It's location on the window is 900, 500. 900 is the x value of the pixel on the display, and 500 is the y value. 
+Its location on the window is 900, 500.
+900 is the x value of the pixel on the display, and 500 is the y value. 
 (1, 2, 3) is the RGB color of the pixel.
+
 900 500 (1, 2, 3)
 ```
 
 # Examples
 
-Some Examples are located in the `imgs` folder. 
+All image files are located in the `imgs` folder. 
 
 ### `2col.txt` 
 This file draws 10 pixels on the window, 2 rows with 5 pixels in each row. A gradient from black to blue is drawn.
