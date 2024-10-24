@@ -74,7 +74,6 @@ int main(int argc, char* argv[]) {
        b.push_back(isolateB(line));
     }
 
-    GLuint vertex_shader, fragment_shader, program;
     if (!glfwInit()) return 1;
     GLFWwindow* window = glfwCreateWindow(1920, 1080, "Image", NULL, NULL);
     if (!window) return 1;
