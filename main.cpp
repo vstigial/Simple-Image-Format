@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include <cstring>
 
 #include <glad/gl.h>
 #define GLFW_INCLUDE_NONE
@@ -39,17 +40,23 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     //HDC hdc = GetDC(0);
-    std::ifstream File(argv[1]);
+    std::ifstream File(argv[1]); // file will always be the first argument
     if (!File) {
         std::cerr << "Provide a valid file path!" << std::endl;
         return 1;
+    }
+
+    bool compression_mode = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "-mcompress") == 0)
+            compression_mode = true;
     }
     std::string text;
     std::vector<std::string> position_lines;
     std::vector<std::string> color_lines;
     std::vector<uint8_t> r, g, b;
-    std::vector<std::vector<size_t>> x, y;
-    //std::vector<size_t> x, y;
+    std::vector<size_t> x, y;
+    std::vector<std::vector<size_t>> x_com, y_com;
 
     while (getline(File, text)) {
         std::string position = text.substr(0, text.find("(")-1);
@@ -64,24 +71,31 @@ int main(int argc, char* argv[]) {
     File.close();
 
     for (std::string line : position_lines) {
-        std::vector<size_t> x_line = {}, y_line = {};
+        if (compression_mode) {
+            std::vector<size_t> x_line = {}, y_line = {};
 
-        std::string x_data = line.substr(0, line.find(" "));
-        size_t x_pix_start = std::stoi(x_data.substr(0, x_data.find("-")))+1;
-        size_t x_pix_end = std::stoi(x_data.substr(x_data.find("-")+1, std::string::npos));
-        while (x_pix_start <= x_pix_end) {
-            x_line.push_back(x_pix_start);
-            ++x_pix_start;
+            std::string x_data = line.substr(0, line.find(" "));
+            size_t x_pix_start = std::stoi(x_data.substr(0, x_data.find("-")))+1;
+            size_t x_pix_end = std::stoi(x_data.substr(x_data.find("-")+1, std::string::npos));
+            while (x_pix_start <= x_pix_end) {
+                x_line.push_back(x_pix_start);
+                ++x_pix_start;
+            }
+            std::string y_data = line.substr(line.find(" ")+1, std::string::npos);
+            size_t y_pix_start = std::stoi(y_data.substr(0, y_data.find("-")))+1;
+            size_t y_pix_end = std::stoi(y_data.substr(y_data.find("-")+1, std::string::npos));
+            while (y_pix_start <= y_pix_end) {
+                y_line.push_back(y_pix_start);
+                ++y_pix_start;        
+            }
+            x_com.push_back(x_line);
+            y_com.push_back(y_line);
+        } else {
+            size_t x_pix = std::stoi(line.substr(0, line.find(" ")));
+            x.push_back(x_pix);
+            size_t y_pix = std::stoi(line.substr(line.find(" ")+1, std::string::npos));
+            y.push_back(y_pix);
         }
-        std::string y_data = line.substr(line.find(" ")+1, std::string::npos);
-        size_t y_pix_start = std::stoi(y_data.substr(0, y_data.find("-")))+1;
-        size_t y_pix_end = std::stoi(y_data.substr(y_data.find("-")+1, std::string::npos));
-        while (y_pix_start <= y_pix_end) {
-            y_line.push_back(y_pix_start);
-            ++y_pix_start;        
-        }
-        x.push_back(x_line);
-        y.push_back(y_line);
     }
 
     for (std::string line : color_lines) {
@@ -102,7 +116,7 @@ int main(int argc, char* argv[]) {
     glfwSwapInterval(2);
     glViewport(0, 0, 1920, 1080);
 
-    // draw to a window pixel by pixel
+    // draw to the window pixel by pixel
     while (!glfwWindowShouldClose(window)) {
         glLoadIdentity();
         glOrtho(0.0f, 1920, 1080, 0.0f, 0.0f, 1.0f);
@@ -112,10 +126,14 @@ int main(int argc, char* argv[]) {
             //Sleep(5);
 
             glColor3ub(r[i], g[i], b[i]);
-            for (size_t x_coord : x[i]) {
-                for (size_t y_coord : y[i]) {
-                    glVertex2i(x_coord, y_coord);
+            if (compression_mode) {
+                for (size_t x_coord : x_com[i]) {
+                    for (size_t y_coord : y_com[i]) {
+                        glVertex2i(x_coord, y_coord);
+                    }
                 }
+            } else {
+                glVertex2i(x[i], y[i]);
             }
         }
         glEnd();
