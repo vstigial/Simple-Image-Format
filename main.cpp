@@ -12,20 +12,24 @@
 
 uint8_t isolateR(std::string str) {
     //std::cout << str.find(",") << std::endl;
-    std::string red = str.substr(0, str.find(","));
-    //std::cout << r << std::endl;
+    std::string red = str.substr(0, str.find_first_of(","));
+    // remove whitespace. commented out because it is not needed
+    //red.erase(remove_if(red.begin(), red.end(), isspace), red.end());
+    //std::cout << "r: " << red << std::endl;
     return static_cast<uint8_t>(std::stoi(red));
 }
 
 uint8_t isolateG(std::string str) {
-    std::string green = str.substr(str.find(",")+1, str.find(",")+1);
-    std::cout << green << std::endl;
+    std::string green = str.substr(str.find_first_of(",")+1, str.find_last_of(",")-str.find_first_of(",")-1);
+    //green.erase(remove_if(green.begin(), green.end(), isspace), green.end());
+    //std::cout << "g: " << green << std::endl;
     return static_cast<uint8_t>(std::stoi(green));
 }
 
 uint8_t isolateB(std::string str) { 
-    std::string blue = str.substr(str.find(",", str.find(",")+1)+1, std::string::npos);
-    //std::cout << blue << std::endl;
+    std::string blue = str.substr(str.find_last_of(",")+1, std::string::npos);
+    //blue.erase(remove_if(blue.begin(), blue.end(), isspace), blue.end());
+    //std::cout << "b: " << blue << std::endl;
     return static_cast<uint8_t>(std::stoi(blue));
 }
 
