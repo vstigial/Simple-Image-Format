@@ -19,7 +19,7 @@ uint8_t isolateR(std::string str) {
 
 uint8_t isolateG(std::string str) {
     std::string green = str.substr(str.find(",")+1, str.find(",")+1);
-    //std::cout << green << std::endl;
+    std::cout << green << std::endl;
     return static_cast<uint8_t>(std::stoi(green));
 }
 
@@ -44,7 +44,8 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> position_lines;
     std::vector<std::string> color_lines;
     std::vector<uint8_t> r, g, b;
-    std::vector<size_t> x, y;
+    std::vector<std::vector<size_t>> x, y;
+    //std::vector<size_t> x, y;
 
     while (getline(File, text)) {
         std::string position = text.substr(0, text.find("(")-1);
@@ -59,10 +60,24 @@ int main(int argc, char* argv[]) {
     File.close();
 
     for (std::string line : position_lines) {
-        size_t x_pix = std::stoi(line.substr(0, line.find(" ")));
-        x.push_back(x_pix);
-        size_t y_pix = std::stoi(line.substr(line.find(" ")+1, std::string::npos));
-        y.push_back(y_pix);
+        std::vector<size_t> x_line = {}, y_line = {};
+
+        std::string x_data = line.substr(0, line.find(" "));
+        size_t x_pix_start = std::stoi(x_data.substr(0, x_data.find("-")))+1;
+        size_t x_pix_end = std::stoi(x_data.substr(x_data.find("-")+1, std::string::npos));
+        while (x_pix_start <= x_pix_end) {
+            x_line.push_back(x_pix_start);
+            ++x_pix_start;
+        }
+        std::string y_data = line.substr(line.find(" ")+1, std::string::npos);
+        size_t y_pix_start = std::stoi(y_data.substr(0, y_data.find("-")))+1;
+        size_t y_pix_end = std::stoi(y_data.substr(y_data.find("-")+1, std::string::npos));
+        while (y_pix_start <= y_pix_end) {
+            y_line.push_back(y_pix_start);
+            ++y_pix_start;        
+        }
+        x.push_back(x_line);
+        y.push_back(y_line);
     }
 
     for (std::string line : color_lines) {
@@ -74,6 +89,7 @@ int main(int argc, char* argv[]) {
        b.push_back(isolateB(line));
     }
 
+    GLuint vertex_shader, fragment_shader, program;
     if (!glfwInit()) return 1;
     GLFWwindow* window = glfwCreateWindow(1920, 1080, "Image", NULL, NULL);
     if (!window) return 1;
@@ -90,9 +106,13 @@ int main(int argc, char* argv[]) {
         for (size_t i = 0; i < r.size(); ++i) {
             //SetPixel(hdc, x[i], y[i], RGB(r[i], g[i], b[i]));
             //Sleep(5);
- 
+
             glColor3ub(r[i], g[i], b[i]);
-            glVertex2i(x[i], y[i]);            
+            for (size_t x_coord : x[i]) {
+                for (size_t y_coord : y[i]) {
+                    glVertex2i(x_coord, y_coord);
+                }
+            }
         }
         glEnd();
         Sleep(50); // limit cpu usage. constant image, framerate doesn't matter

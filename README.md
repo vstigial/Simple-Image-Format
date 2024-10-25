@@ -3,7 +3,7 @@
 This program draws data pixel by pixel to a GLFW window with OpenGL.
 
 ### Todo:
- - Implement optional compression for a smaller file size.
+ - Make compression optional by a flag to the program or a header in the image file.
  - Implement a simple GUI editor for this format.
 
 ## Drawing a pixel
